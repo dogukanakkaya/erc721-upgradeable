@@ -8,31 +8,16 @@ async function main() {
   const myNFTv1 = await upgrades.deployProxy(MyNFTV1);
   await myNFTv1.deployed();
 
-  try {
-    console.log(await myNFTv1.nextTokenId());
-  } catch (_) {
-    console.log(`nextTokenId function is not defined in version 1.`);
-  }
+  await myNFTv1.mintItem('https://run.mocky.io/v3/17d6e506-17e3-4b53-a964-a7e0ed565ad0', { value: ethers.utils.parseEther('0.00001') });
 
-  try {
-    await myNFTv1.mintItem('https://run.mocky.io/v3/17d6e506-17e3-4b53-a964-a7e0ed565ad0', { value: ethers.utils.parseEther('0.00001') });
-  } catch (err: any) {
-    console.log(err.reason);
-  }
+  console.log(await myNFTv1.latestTokenId());
 
-  // upgrade the
+  // upgrade the contract
   const MyNFT = await ethers.getContractFactory(contractName);
   const myNFT = await upgrades.upgradeProxy(myNFTv1.address, MyNFT);
   await myNFT.deployed();
 
-  console.log(`MyNFT deployed to ${myNFT.address}`);
-
-  // try to mint the item with required fee
-  try {
-    await myNFT.mintItem('https://run.mocky.io/v3/17d6e506-17e3-4b53-a964-a7e0ed565ad0', { value: ethers.utils.parseEther('0.00005') });
-  } catch (err: any) {
-    console.log(err.reason);
-  }
+  await myNFT.mintItem('https://run.mocky.io/v3/17d6e506-17e3-4b53-a964-a7e0ed565ad0', { value: ethers.utils.parseEther('0.00005') });
 
   console.log(await myNFT.latestTokenId());
   console.log(await myNFT.nextTokenId());
