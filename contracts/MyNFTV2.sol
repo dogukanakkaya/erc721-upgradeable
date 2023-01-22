@@ -8,12 +8,6 @@ contract MyNFTV2 is ERC721URIStorageUpgradeable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    uint256 fee = 0.00005 ether;
-
-    function setFee(uint256 _fee) public {
-        fee = _fee;
-    }
-
     function initialize() public initializer {
         __ERC721_init("MyNFT", "MYN");
     }
