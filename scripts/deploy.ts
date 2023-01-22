@@ -1,18 +1,28 @@
 import { ethers, upgrades } from "hardhat";
 
-const contractAddress = '0x9Ce46a9ef8e19D19973c27814a6180ac7a591883';
 const contractName = 'MyNFTV2';
 
 async function main() {
   // deploy a new contract
-  // const MyNFT = await ethers.getContractFactory(contractName);
-  // const myNFT = await upgrades.deployProxy(MyNFT);
-  // await myNFT.deployed();
-  // const myNFT = await ethers.getContractAt(contractName, contractAddress);
+  const MyNFTV1 = await ethers.getContractFactory('MyNFTV1');
+  const myNFTv1 = await upgrades.deployProxy(MyNFTV1);
+  await myNFTv1.deployed();
 
-  // upgrade the contract in `contractAddress`
+  try {
+    console.log(await myNFTv1.nextTokenId());
+  } catch (_) {
+    console.log(`nextTokenId function is not defined in version 1.`);
+  }
+
+  try {
+    await myNFTv1.mintItem('https://run.mocky.io/v3/17d6e506-17e3-4b53-a964-a7e0ed565ad0', { value: ethers.utils.parseEther('0.00001') });
+  } catch (err: any) {
+    console.log(err.reason);
+  }
+
+  // upgrade the
   const MyNFT = await ethers.getContractFactory(contractName);
-  const myNFT = await upgrades.upgradeProxy(contractAddress, MyNFT);
+  const myNFT = await upgrades.upgradeProxy(myNFTv1.address, MyNFT);
   await myNFT.deployed();
 
   console.log(`MyNFT deployed to ${myNFT.address}`);
@@ -24,15 +34,8 @@ async function main() {
     console.log(err.reason);
   }
 
-  // get the latest token id that is minted
-  console.log(await myNFT.getLatestTokenId(contractName, myNFT.address));
-
-  // try to get the next token id which is only available in v2
-  try {
-    console.log(await myNFT.getNextTokenId(contractName, myNFT.address));
-  } catch (_) {
-    console.log(`getNextTokenId function is not defined in ${contractName} version.`);
-  }
+  console.log(await myNFT.latestTokenId());
+  console.log(await myNFT.nextTokenId());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
